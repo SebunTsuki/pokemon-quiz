@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>谁是你的宝可梦伙伴？ - 宝可梦人格测试</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23FF5350' stroke='%23000' stroke-width='4'/><rect x='4' y='46' width='92' height='8' fill='%23000'/><circle cx='50' cy='50' r='20' fill='%23fff' stroke='%23000' stroke-width='4'/><circle cx='50' cy='50' r='10' fill='%23fff' stroke='%23000' stroke-width='2'/></svg>">
+  <style>
+    :root {
+      --primary: #FF5350;
+      --secondary: #FFCB05;
+      --accent: #3B5CA8;
+      --background: #1a1a2e;
+      --surface: #252541;
+      --surface-light: #3a3a5c;
+      --text: #FFFFFF;
+      --text-muted: #a0a0b0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', system-ui, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--secondary);
+      opacity: 0.3;
+      animation: float 15s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+      }
+      10% { opacity: 0.3; }
+      90% { opacity: 0.3; }
+      100% {
+        transform: translateY(-100px) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 650px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      animation: fadeInDown 0.6s ease-out;
+    }
+
+    .pokeball-icon {
+      width: 60px;
+      height: 60px;
+      animation: spin 8s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .logo h1 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      text-align: center;
+      animation: fadeInDown 0.6s ease-out 0.1s both;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: fadeInUp 0.6s ease-out 0.2s both;
+    }
+
+    .welcome {
+      text-align: center;
+    }
+
+    .welcome-text {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .welcome-emoji {
+      font-size: 4rem;
+      margin-bottom: 24px;
+      display: block;
+      animation: bounce 1s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .btn {
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      padding: 16px 48px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), #ff7b7b);
+      color: white;
+      box-shadow: 0 8px 30px rgba(255, 83, 80, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(255, 83, 80, 0.5);
+    }
+
+    .btn-secondary {
+      background: var(--surface-light);
+      color: var(--text);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .question-container {
+      display: none;
+    }
+
+    .question-container.active {
+      display: block;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .progress-container {
+      margin-bottom: 32px;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--surface-light);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+      border-radius: 4px;
+      transition: width 0.4s ease-out;
+      position: relative;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .question-number {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--secondary), #ffd54f);
+      color: var(--background);
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+    }
+
+    .question-text {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 32px;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option {
+      background: var(--surface-light);
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 18px 24px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--text);
+      width: 100%;
+      text-align: left;
+    }
+
+    .option:hover {
+      background: #4a4a6a;
+      transform: translateX(8px);
+      border-color: var(--secondary);
+    }
+
+    .option.selected {
+      background: linear-gradient(135deg, var(--primary), #ff7b7b);
+      border-color: var(--primary);
+      transform: translateX(8px);
+      box-shadow: 0 8px 30px rgba(255, 83, 80, 0.3);
+    }
+
+    .option-letter {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .option.selected .option-letter {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .result-container {
+      display: none;
+      text-align: center;
+    }
+
+    .result-container.active {
+      display: block;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .result-header {
+      font-size: 1.2rem;
+      color: var(--secondary);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .result-title {
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.8rem;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .pokemon-showcase {
+      position: relative;
+      margin-bottom: 32px;
+    }
+
+    .pokemon-image-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .pokemon-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
+      opacity: 0.3;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.2; }
+    }
+
+    .pokemon-image {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      animation: pokemonEnter 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
+    }
+
+    @keyframes pokemonEnter {
+      0% {
+        opacity: 0;
+        transform: scale(0) rotate(-10deg);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.1) rotate(5deg);
+      }
+      100% {
+        transform: scale(1) rotate(0deg);
+      }
+    }
+
+    .sparkles {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 250px;
+      height: 250px;
+      pointer-events: none;
+    }
+
+    .sparkle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--secondary);
+      border-radius: 50%;
+      animation: sparkle 1.5s ease-in-out infinite;
+    }
+
+    .sparkle:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
+    .sparkle:nth-child(2) { top: 20%; right: 15%; animation-delay: 0.2s; }
+    .sparkle:nth-child(3) { bottom: 20%; left: 10%; animation-delay: 0.4s; }
+    .sparkle:nth-child(4) { bottom: 15%; right: 20%; animation-delay: 0.6s; }
+    .sparkle:nth-child(5) { top: 50%; left: 5%; animation-delay: 0.8s; }
+    .sparkle:nth-child(6) { top: 50%; right: 5%; animation-delay: 1s; }
+
+    @keyframes sparkle {
+      0%, 100% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1); opacity: 1; }
+    }
+
+    .pokemon-name {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .pokemon-number {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+      animation: fadeInUp 0.6s ease-out 0.4s both;
+    }
+
+    .personality-tags {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      animation: fadeInUp 0.6s ease-out 0.5s both;
+    }
+
+    .personality-tag {
+      background: linear-gradient(135deg, var(--accent), #5a7cc8);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .result-description {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      animation: fadeInUp 0.6s ease-out 0.6s both;
+      text-align: left;
+    }
+
+    .result-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      animation: fadeInUp 0.6s ease-out 0.7s both;
+    }
+
+    .compatibility {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--surface-light);
+      animation: fadeInUp 0.6s ease-out 0.8s both;
+    }
+
+    .compatibility-title {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .compatibility-bar {
+      height: 8px;
+      background: var(--surface-light);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .compatibility-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 4px;
+      transition: width 1s ease-out 1s;
+      width: 0;
+    }
+
+    .compatibility-text {
+      font-weight: 700;
+      color: var(--secondary);
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--surface-light);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px 16px;
+      }
+
+      .logo h1 {
+        font-size: 1.5rem;
+      }
+
+      .pokeball-icon {
+        width: 48px;
+        height: 48px;
+      }
+
+      .card {
+        padding: 28px 20px;
+        border-radius: 20px;
+      }
+
+      .question-text {
+        font-size: 1.2rem;
+      }
+
+      .pokemon-image {
+        width: 160px;
+        height: 160px;
+      }
+
+      .pokemon-glow {
+        width: 180px;
+        height: 180px;
+      }
+
+      .pokemon-name {
+        font-size: 1.8rem;
+      }
+
+      .result-actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--background);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--surface-light);
+      border-radius: 4px;
+    }
+
+    ::selection {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn:focus-visible,
+    .option:focus-visible {
+      outline: 3px solid var(--secondary);
+      outline-offset: 3px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+  <div class="particles" id="particles"></div>
+
+  <div class="container">
+    <div class="logo">
+      <svg class="pokeball-icon" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="48" fill="#FF5350" stroke="#000" stroke-width="4"/>
+        <path d="M 2 50 A 48 48 0 0 0 98 50" fill="#FF5350"/>
+        <path d="M 2 50 A 48 48 0 0 1 98 50" fill="#fff"/>
+        <rect x="2" y="46" width="96" height="8" fill="#000"/>
+        <circle cx="50" cy="50" r="18" fill="#fff" stroke="#000" stroke-width="4"/>
+        <circle cx="50" cy="50" r="10" fill="#fff" stroke="#000" stroke-width="2"/>
+        <circle cx="46" cy="46" r="4" fill="#fff" stroke="#000" stroke-width="1"/>
+      </svg>
+      <h1>宝可梦伙伴测试</h1>
+    </div>
+    <p class="subtitle">发现与你心灵相通的宝可梦伙伴</p>
+
+    <div class="card">
+      <div class="welcome" id="welcomeScreen">
+        <span class="welcome-emoji">🔮</span>
+        <p class="welcome-text">
+          在宝可梦的世界里，每一位训练师都有专属的伙伴。<br>
+          通过回答30道有趣的问题，我们将揭示谁将成为你命中注定的宝可梦伙伴！<br><br>
+          准备好了吗？让我们开始寻找属于你的伙伴吧！✨
+        </p>
+        <button class="btn btn-primary" onclick="startTest()">开始测试 ✨</button>
+      </div>
+
+      <div class="question-container" id="questionScreen">
+        <div class="progress-container">
+          <div class="progress-text">
+            <span id="progressText">第 1 题</span>
+            <span id="progressPercent">3%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 3%"></div>
+          </div>
+        </div>
+
+        <span class="question-number" id="questionNumber">问题 1/30</span>
+        <h2 class="question-text" id="questionText"></h2>
+
+        <div class="options" id="optionsContainer"></div>
+      </div>
+
+      <div class="loading" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <p>正在寻找你的宝可梦伙伴...</p>
+      </div>
+
+      <div class="result-container" id="resultScreen">
+        <p class="result-header">🎉 恭喜你！你的宝可梦伙伴是...</p>
+        <h2 class="result-title" id="resultTitle"></h2>
+
+        <div class="pokemon-showcase">
+          <div class="pokemon-glow"></div>
+          <div class="sparkles">
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+            <div class="sparkle"></div>
+          </div>
+          <div class="pokemon-image-container">
+            <img class="pokemon-image" id="pokemonImage" src="" alt="宝可梦">
+          </div>
+        </div>
+
+        <h3 class="pokemon-name" id="pokemonName"></h3>
+        <p class="pokemon-number" id="pokemonNumber"></p>
+
+        <div class="personality-tags" id="personalityTags"></div>
+
+        <p class="result-description" id="resultDescription"></p>
+
+        <div class="compatibility">
+          <p class="compatibility-title">灵魂契合度</p>
+          <div class="compatibility-bar">
+            <div class="compatibility-fill" id="compatibilityFill"></div>
+          </div>
+          <p class="compatibility-text" id="compatibilityText">87%</p>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn btn-primary" onclick="shareResult()">分享结果 🎯</button>
+          <button class="btn btn-secondary" onclick="resetTest()">重新测试 🔄</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// 完整的151只关都地区宝可梦数据库
+const POKEMON_DATABASE = [
+  {id:1,name:"妙蛙种子",personalities:["自然型","温和型","治愈型","守护型"],description:"你拥有与大自然和谐共处的天赋，正如妙蛙种子背上的神奇花蕾。你的内心温柔而富有生命力，总是能够用自己的方式治愈身边的人。无论走到哪里，你都能让周围的环境变得更加美好，是一个天生的治愈者与守护者。"},
+  {id:2,name:"妙蛙草",personalities:["自然型","温和型","耐心型","守护型"],description:"你就像森林中沉稳的行者，拥有超越年龄的智慧与耐心。妙蛙草被你的坚韧所吸引，你懂得万物生长的规律，从不急于求成。你是朋友眼中最可靠的依靠，总是默默守护着重要的人。"},
+  {id:3,name:"妙蛙花",personalities:["自然型","温和型","守护型","智慧型"],description:"你散发出古老而神秘的自然气息，如同一座移动的花园。妙蛙花认可你对生命的尊重与热爱，你懂得如何与天地万物和谐共处。你的存在能让周围的一切都变得更加生机勃勃。"},
+  {id:4,name:"小火龙",personalities:["冒险型","勇敢型","活力型","挑战型"],description:"你心中燃烧着永不熄灭的火焰，如同刚刚踏上冒险旅程的小火龙。你的热情与毅力能够感染身边的每一个人，无论面对怎样的困难，你都绝不会轻言放弃。天生的冒险精神让你的人生充满精彩。"},
+  {id:5,name:"火恐龙",personalities:["冒险型","勇敢型","挑战型","力量型"],description:"你的内心燃烧着强大的力量之火，如同进化的火恐龙一般充满威严。你敢于直面任何挑战，从不退缩。你的坚毅与勇气激励着周围的人，是天生的领袖气质。"},
+  {id:6,name:"喷火龙",personalities:["冒险型","勇敢型","挑战型","自由型"],description:"你是真正的火焰化身，如同展翅高飞的喷火龙般威风凛凛。冒险是你生命的意义，自由是你永恒的追求。你不甘于平凡，总是向着更高的天空挑战自我，这种精神令人敬佩。"},
+  {id:7,name:"杰尼龟",personalities:["温和型","理性型","谨慎型","合作型"],description:"你像杰尼龟一样冷静睿智，从不轻易冲动行事。你的处世哲学是稳扎稳打，用智慧而非蛮力解决问题。你是团队中最可靠的存在，大家都知道有你在就一定不会出错。"},
+  {id:8,name:"卡咪龟",personalities:["温和型","理性型","可靠型","守护型"],description:"你拥有沉稳如水的气质，如同进化后的卡咪龟般值得信赖。你善于用温和的方式照顾身边的每一个人，是朋友们最温暖的港湾。你的守护如同水流般温柔而持久。"},
+  {id:9,name:"水箭龟",personalities:["理性型","谨慎型","可靠型","守护型"],description:"你是坚不可摧的堡垒，如同水箭龟强大的龟壳一般。你的理性与冷静让你在危机时刻做出最正确的判断，而你的可靠则让所有人都对你充满信任。"},
+  {id:10,name:"绿毛虫",personalities:["自然型","纯真型","成长型","乐观型"],description:"你保持着最纯真的心灵，如同森林中无忧无虑的绿毛虫。虽然看起来平凡，但你的成长潜力是无限的！你用乐观的态度面对一切，相信自己终会化蝶高飞。"},
+  {id:11,name:"铁甲蛹",personalities:["自然型","内敛型","成长型","专注型"],description:"你正处于沉淀积累的关键时刻，如同铁甲蛹一般看似静止，实则内蕴巨大的能量。你懂得在适当的时机保持低调，蓄势待发，等待着破茧而出的那一刻。"},
+  {id:12,name:"巴大蝶",personalities:["自然型","自由型","梦幻型","温柔型"],description:"你的心灵如翅膀般轻盈自由，如同随风飞舞的巴大蝶。你拥有梦幻般的想象力，能够看到别人看不到的美好世界。你的温柔让每一个靠近你的人都感到安心。"},
+  {id:13,name:"独角虫",personalities:["活力型","乐观型","成长型","自然型"],description:"你小小的身体里蕴含着大大的梦想，如同不起眼的独角虫一般。虽然现在还不够强大，但你相信只要努力，终有一天会蜕变成令人惊叹的存在。"},
+  {id:14,name:"铁壳蛹",personalities:["内敛型","专注型","成长型","自然型"],description:"你正在经历生命中重要的转变期，如同铁壳蛹一般静静等待蜕变。你懂得耐心等待的意义，知道真正的力量需要时间来沉淀。"},
+  {id:15,name:"大针蜂",personalities:["活力型","进取型","挑战型","自由型"],description:"你拥有强烈的进取心，如同大针蜂一般充满活力与斗志。你不喜欢被束缚，追求绝对的自由。虽然有时会显得冲动，但这是你追求梦想的方式。"},
+  {id:16,name:"波波",personalities:["活力型","乐观型","自由型","社交型"],description:"你像波波一样活泼可爱，总是给周围带来欢乐的气息。你喜欢自由飞翔的感觉，对世界充满好奇。你的乐观感染着每一个人。"},
+  {id:17,name:"比比鸟",personalities:["冒险型","自由型","优雅型","进取型"],description:"你已经准备好展翅高飞，如同比比鸟一般翱翔天际。你追求更高的目标，从不满足于现状。优雅是你的代名词，在追求梦想的路上你始终保持从容。"},
+  {id:18,name:"大比鸟",personalities:["冒险型","自由型","守护型","优雅型"],description:"你是天空中的王者，如同大比鸟一般威严而优雅。你既有征服天空的野心，也有守护同伴的温柔。在你心中，自由与责任同样重要。"},
+  {id:19,name:"小拉达",personalities:["活力型","机智型","适应型","务实型"],description:"你拥有极强的环境适应能力，如同小拉达一般无论身处何地都能生存下来。你务实而机智，懂得如何在复杂的世界中找到自己的生存之道。"},
+  {id:20,name:"拉达",personalities:["机智型","适应型","务实型","可靠型"],description:"你是真正的生存专家，如同拉达一般拥有惊人的适应力。你不挑环境，不惧挑战，总能找到前进的道路。务实是你的人生哲学。"},
+  {id:21,name:"烈雀",personalities:["活力型","挑战型","勇敢型","自由型"],description:"你有着不服输的精神，如同烈雀一般敢于挑战任何强敌。虽然体型不大，但你拥有与之不匹配的勇气。你的自由灵魂不允许你向任何人低头。"},
+  {id:22,name:"大嘴雀",personalities:["冒险型","自由型","挑战型","力量型"],description:"你是天空中的猎手，如同大嘴雀一般锐利而强大。你追求极致的速度与力量，享受在空中自由翱翔的感觉。你的人生信条是：没有什么是不可能的。"},
+  {id:23,name:"阿柏蛇",personalities:["神秘型","机智型","内向型","冷静型"],description:"你有着深不可测的一面，如同阿柏蛇一般神秘而优雅。你不轻易表露情感，但内心世界却无比丰富。冷静是你面对一切的态度。"},
+  {id:24,name:"阿柏怪",personalities:["神秘型","力量型","挑战型","冷静型"],description:"你是丛林中真正的王者，如同阿柏怪一般威严而致命。你拥有冷静的头脑和强大的力量，是令所有对手都敬畏的存在。神秘是你的魅力所在。"},
+  {id:25,name:"皮卡丘",personalities:["活力型","社交型","可爱型","乐观型"],description:"你就像皮卡丘一样充满活力与可爱的魅力！你的笑容有着超强的感染力，能让周围所有人都感受到快乐。你活泼开朗，永远保持着一颗童心。"},
+  {id:26,name:"雷丘",personalities:["活力型","机智型","挑战型","可靠型"],description:"你拥有强大的能量，如同进化后的雷丘一般电力十足。你既有可爱的外表，也有聪明的头脑。在关键时刻，你总是能够爆发出惊人的力量。"},
+  {id:27,name:"穿山鼠",personalities:["内敛型","防御型","谨慎型","适应型"],description:"你有着出色的防御本能，如同穿山鼠一般懂得保护自己。你善于在各种环境中生存，适应能力极强。你不张扬，但内心无比坚强。"},
+  {id:28,name:"穿山王",personalities:["防御型","可靠型","挑战型","内敛型"],description:"你是坚不可摧的堡垒，如同穿山王一般拥有强大的防御能力。你可靠而稳重，是朋友们最坚实的后盾。你的力量来自于内心的坚定。"},
+  {id:29,name:"尼多兰",personalities:["温柔型","可爱型","社交型","情感型"],description:"你如尼多兰一般温柔可爱，散发着柔和的气息。你重视情感的交流，渴望被爱与爱护。你的存在就像温暖的阳光，让人忍不住想要靠近。"},
+  {id:30,name:"尼多娜",personalities:["温柔型","治愈型","情感型","守护型"],description:"你拥有温柔的内心与强大的母性本能，如同尼多娜一般充满爱心。你善于照顾他人，是朋友们的知心姐姐。你的温暖能够治愈一切伤痛。"},
+  {id:31,name:"尼多后",personalities:["温柔型","守护型","可靠型","力量型"],description:"你是温柔与力量的完美结合，如同尼多后一般既有女性的温柔，也有强大的保护能力。你会不惜一切代价守护你所爱的人。"},
+  {id:32,name:"尼多朗",personalities:["活力型","勇敢型","挑战型","乐观型"],description:"你拥有旺盛的生命力，如同尼多朗一般充满朝气。你勇敢无畏，敢于面对任何挑战。乐观是你的标签，你相信一切都会好起来。"},
+  {id:33,name:"尼多王",personalities:["勇敢型","挑战型","力量型","可靠型"],description:"你是力量与威严的化身，如同尼多王一般拥有王者的气质。你的勇气无人能及，你的力量令人敬畏。但你内心深处依然保留着柔软的一面。"},
+  {id:34,name:"皮皮",personalities:["温柔型","治愈型","社交型","可爱型"],description:"你就像皮皮一样充满爱心，是天生的治愈者。你的温柔与可爱能够融化一切坚冰，让周围的人都感受到幸福与温暖。"},
+  {id:35,name:"皮可西",personalities:["温柔型","治愈型","守护型","社交型"],description:"你是月光下的守护天使，如同皮可西一般温柔而强大。你用爱与温柔守护着身边的每一个人，是所有人最温暖的精神支柱。"},
+  {id:36,name:"六尾",personalities:["神秘型","优雅型","自由型","智慧型"],description:"你拥有神秘而优雅的气质，如同六尾一般美丽而高傲。你不喜欢被打扰，保留着一定的神秘感。你的智慧让你能够看透很多事情。"},
+  {id:37,name:"九尾",personalities:["神秘型","智慧型","优雅型","力量型"],description:"你是智慧与力量的完美结合，如同九尾一般拥有超凡脱俗的气质。你的每一个举动都充满优雅，你的话语总是蕴含着深刻的哲理。"},
+  {id:38,name:"胖丁",personalities:["可爱型","乐观型","社交型","艺术型"],description:"你就像胖丁一样可爱迷人，是天生的开心果。你的歌声能够治愈心灵，你的乐观能够感染所有人。艺术是你表达情感的方式。"},
+  {id:39,name:"胖可丁",personalities:["可爱型","温柔型","社交型","艺术型"],description:"你是艺术与可爱的完美结合，如同胖可丁一般能用歌声传递温暖。你善于用柔和的方式与人交流，是天生的社交高手。"},
+  {id:40,name:"超音蝠",personalities:["内敛型","神秘型","适应型","自由型"],description:"你在黑暗中寻找自由，如同超音蝠一般不畏艰难。你适应能力极强，能够在任何环境中生存。你享受独处的时光，在寂静中思考人生。"},
+  {id:41,name:"大嘴蝠",personalities:["神秘型","挑战型","自由型","力量型"],description:"你是黑暗中的猎手，如同大嘴蝠一般拥有独特的生存之道。你追求绝对的实力，在挑战中不断成长。你的自由灵魂不允许任何束缚。"},
+  {id:42,name:"摩鲁蛾",personalities:["神秘型","自由型","优雅型","夜间型"],description:"你是夜晚最美的存在，如同摩鲁蛾一般在月光下翩翩起舞。你的美是神秘而朦胧的，你享受夜的静谧与自由。"},
+  {id:43,name:"走路草",personalities:["自然型","治愈型","温和型","乐观型"],description:"你如走路草一般贴近大自然，总能发现生活中最简单的美好。你乐观向上，用自己的方式传递着积极能量，让周围的人也跟着快乐起来。"},
+  {id:44,name:"臭臭花",personalities:["自然型","独特型","幽默型","乐观型"],description:"你虽然有着独特的气味，但内心却无比美好，正如臭臭花一般。你幽默风趣，能够发现别人看不到的乐趣。你的乐观让一切困难都变得不再可怕。"},
+  {id:45,name:"霸王花",personalities:["自然型","优雅型","力量型","治愈型"],description:"你是花园中的女王，如同霸王花一般美丽而强大。你的花瓣蕴含着治愈的力量，你的存在让周围的一切都变得更加美好。优雅是你永恒的气质。"},
+  {id:46,name:"派拉斯",personalities:["自然型","勤劳型","内敛型","成长型"],description:"你像派拉斯一样勤劳踏实，从不偷懒。你懂得一分耕耘一分收获的道理，脚踏实地地朝着目标前进。你相信只要努力，终会有所成就。"},
+  {id:47,name:"派海星",personalities:["自然型","勤劳型","可靠型","成长型"],description:"你是勤劳的典范，如同派海星一般默默耕耘。你不善言辞，但用行动证明一切。你的可靠性让所有人都对你放心，你是最值得信赖的伙伴。"},
+  {id:48,name:"毛球",personalities:["自然型","内敛型","神秘型","感知型"],description:"你拥有超强的感知能力，如同毛球一般能察觉最微弱的变化。你内敛而神秘，喜欢在安静的地方思考。你的直觉总是准确无误。"},
+  {id:49,name:"末入蛾",personalities:["神秘型","感知型","夜间型","优雅型"],description:"你是夜晚的精灵，如同末入蛾一般在月光下优雅飞舞。你拥有敏锐的感知力，能察觉到别人忽略的细节。神秘是你的魅力。"},
+  {id:50,name:"地鼠",personalities:["勤劳型","适应型","务实型","内敛型"],description:"你埋头苦干从不张扬，如同地鼠一般默默努力。你适应能力超强，无论环境多么恶劣都能生存。务实是你的人生信条。"},
+  {id:51,name:"三地鼠",personalities:["机智型","适应型","协作型","力量型"],description:"你们是完美的团队，如同三地鼠一般默契配合。你们分工明确，效率超高。适应力与协作能力让你们能够完成任何挑战。"},
+  {id:52,name:"喵喵",personalities:["机智型","社交型","魅力型","独立型"],description:"你聪明伶俐又魅力四射，如同喵喵一般总能成为焦点。你有着独立的精神，喜欢用自己的方式生活。你的机智让你能够巧妙应对各种情况。"},
+  {id:53,name:"猫老大",personalities:["优雅型","独立型","自信型","魅力型"],description:"你是天生的贵族，如同猫老大一般优雅而自信。你不喜欢被束缚，追求高品质的生活。你的每一个举动都散发着独特的魅力。"},
+  {id:54,name:"可达鸭",personalities:["内敛型","独特型","纯真型","幽默型"],description:"你有着独特的思维方式，虽然看起来有点呆萌，但内心却无比纯真。你不在意别人的眼光，坚持做自己。你的存在本身就是一种独特的魅力。"},
+  {id:55,name:"哥达鸭",personalities:["智慧型","理性型","优雅型","力量型"],description:"你拥有超乎寻常的智慧，如同哥达鸭进化后的形态一般优雅而强大。你冷静理性，总能在关键时刻做出正确的判断。"},
+  {id:56,name:"猴怪",personalities:["活力型","挑战型","勇敢型","热情型"],description:"你精力充沛如同猴怪，总是充满战斗的热情。你勇于挑战自我，从不畏惧强敌。热情是你的标签，你的活力能感染身边的每一个人。"},
+  {id:57,name:"火暴猴",personalities:["挑战型","力量型","勇敢型","热情型"],description:"你是力量与激情的化身，如同火暴猴一般充满能量。你有着不屈不挠的战斗精神，总是全力以赴。热情是你生命的燃料。"},
+  {id:58,name:"卡蒂狗",personalities:["忠诚型","热情型","勇敢型","温柔型"],description:"你有着最忠诚的灵魂，如同卡蒂狗一般永远不离不弃。你热情似火，温柔起来又能融化一切。你是最值得拥有的伙伴。"},
+  {id:59,name:"风速狗",personalities:["优雅型","力量型","守护型","忠诚型"],description:"你是优雅与力量的完美结合，如同风速狗一般既美丽又强大。你有着强烈的守护本能，对所爱的人绝对忠诚。你的存在本身就是一种守护。"},
+  {id:60,name:"蚊香蝌蚪",personalities:["自然型","纯真型","适应型","乐观型"],description:"你纯真无邪如同蚊香蝌蚪，对世界充满好奇。你适应能力很强，能够在各种环境中成长。乐观让你总能发现生活中的美好。"},
+  {id:61,name:"蚊香蛙",personalities:["理性型","谨慎型","力量型","保护型"],description:"你冷静而强大，如同蚊香蛙一般有着出色的战斗能力。你谨慎稳重，从不轻敌。你的保护本能让你成为朋友们的坚强后盾。"},
+  {id:62,name:"蚊香泳士",personalities:["力量型","守护型","理性型","可靠型"],description:"你是水中的守护神，如同蚊香泳士一般拥有强大的力量与守护心。你稳重可靠，是最值得信赖的伙伴。你的力量只为保护重要的人而存在。"},
+  {id:63,name:"凯西",personalities:["神秘型","智慧型","内向型","感知型"],description:"你拥有强大的超能力，如同凯西一般神秘莫测。你喜欢独处思考，智慧超群。你的感知能力非凡，能察觉到常人无法感知的领域。"},
+  {id:64,name:"勇吉拉",personalities:["智慧型","神秘型","理性型","力量型"],description:"你是智慧与力量的完美结合，如同勇吉拉一般拥有超凡的能力。你理性冷静，从不感情用事。你的存在透着一种神秘的高人气质。"},
+  {id:65,name:"胡地",personalities:["智慧型","神秘型","力量型","超然型"],description:"你拥有宇宙级的智慧，如同胡地一般知识渊博得令人惊叹。你的超能力强大而神秘，已然超越凡人的境界。你是智者中的智者。"},
+  {id:66,name:"腕力",personalities:["活力型","挑战型","勇敢型","热血型"],description:"你浑身充满力量与热血，如同腕力一般永不疲倦。你热爱挑战，把每一次战斗都当作提升自己的机会。热血是你永恒的标签。"},
+  {id:67,name:"豪力",personalities:["力量型","可靠型","挑战型","热血型"],description:"你是力量的象征，如同豪力一般肌肉结实力量惊人。你可靠稳重，是朋友们的依靠。你的热血让你在战斗中永不退缩。"},
+  {id:68,name:"怪力",personalities:["力量型","挑战型","可靠型","勇敢型"],description:"你是力量的巅峰，如同怪力一般四臂齐挥天下无敌。你不仅力大无穷，还可靠值得信赖。面对任何挑战，你都无所畏惧。"},
+  {id:69,name:"喇叭芽",personalities:["自然型","独特型","幽默型","乐观型"],description:"你有着独特的幽默感，如同喇叭芽一般总能用独特的方式逗人开心。你乐观向上，用自己的方式诠释着生活的美好。"},
+  {id:70,name:"口呆花",personalities:["自然型","独特型","成长型","挑战型"],description:"你正在茁壮成长，如同口呆花一般不断进化自己。你有着独特的个性，不随波逐流。挑战是成长的必经之路，你深谙此道。"},
+  {id:71,name:"大食花",personalities:["自然型","力量型","挑战型","独特型"],description:"你是丛林中的顶级猎手，如同大食花一般拥有绝对的捕食能力。你独特而强大，不惧怕任何对手。你的存在本身就是一种威慑。"},
+  {id:72,name:"玛瑙水母",personalities:["自然型","神秘型","冷静型","独立型"],description:"你来自深海的深处，如同玛瑙水母一般带着海洋的神秘。你冷静独立，享受独处的时光。你的美是那种冷艳而神秘的美。"},
+  {id:73,name:"毒刺水母",personalities:["神秘型","力量型","冷静型","守护型"],description:"你是深海中的守护者，如同毒刺水母一般美丽而危险。你冷静且强大，用自己的方式守护着海洋的秩序。神秘是你的代名词。"},
+  {id:74,name:"小拳石",personalities:["坚定型","顽强型","朴实型","可靠型"],description:"你像小拳石一样坚不可摧，无论遭遇什么困难都能承受。你朴实无华，从不张扬，但你的存在就是最可靠的证明。"},
+  {id:75,name:"隆隆石",personalities:["坚定型","顽强型","可靠型","内敛型"],description:"你是沉稳的象征，如同隆隆石一般稳重可靠。你虽然不善言辞，但内心的力量却无比坚定。你的可靠让所有人都对你放心。"},
+  {id:76,name:"隆隆岩",personalities:["力量型","可靠型","坚定型","挑战型"],description:"你是移动的堡垒，如同隆隆岩一般坚不可摧。你稳重且可靠，是你所在团队的中流砥柱。面对挑战，你永不退缩。"},
+  {id:77,name:"小火马",personalities:["活力型","自由型","优雅型","热情型"],description:"你如同小火马一般热情奔放，浑身散发着青春的活力。你追求自由，喜欢在广阔天地间奔跑。你的热情能点燃周围所有人的心。"},
+  {id:78,name:"烈焰马",personalities:["活力型","自由型","力量型","优雅型"],description:"你是速度与优雅的完美结合，如同烈焰马一般在火焰中飞驰。你追求极致的速度与自由，是所有生灵中最高贵优雅的存在。"},
+  {id:79,name:"呆呆兽",personalities:["温和型","纯真型","乐观型","治愈型"],description:"你呆萌可爱如同呆呆兽，总能用纯真的眼神治愈人心。你对任何事都慢半拍，但正是这种从容让你显得格外有魅力。"},
+  {id:80,name:"呆壳兽",personalities:["温和型","可靠型","理性型","治愈型"],description:"你是温柔与智慧的结合，如同呆壳兽一般虽然反应慢但心思细腻。你可靠且治愈，是朋友们的贴心港湾。呆萌是你的魅力。"},
+  {id:81,name:"小磁怪",personalities:["科技型","理性型","独特型","能量型"],description:"你来自科技的世界，如同小磁怪一般充满电的能量。你理性而独特，对科技有着天然的亲近感。你代表着未来与希望。"},
+  {id:82,name:"三合一磁怪",personalities:["科技型","能量型","协作型","力量型"],description:"你们是完美协作的典范，如同三合一磁怪一般三个个体合为一体。你们代表着科技的力量与协作的精神，是独特而强大的存在。"},
+  {id:83,name:"大葱鸭",personalities:["独特型","自由型","优雅型","自信型"],description:"你独特而自信，如同大葱鸭一般有着自己独特的风格。你不随波逐流，坚持做自己。你的存在本身就是一种个性的宣言。"},
+  {id:84,name:"嘟嘟",personalities:["活力型","乐观型","自由型","纯真型"],description:"你活泼可爱如同嘟嘟，总是充满活力与好奇心。你享受自由的奔跑，对世界充满探索的渴望。纯真是你最大的魅力。"},
+  {id:85,name:"嘟嘟利",personalities:["活力型","自由型","挑战型","独特型"],description:"你是独特的三头神鸟，如同嘟嘟利一般有着不一般的存在方式。你活力四射，自由奔放，用自己的方式诠释着生命的精彩。"},
+  {id:86,name:"小海狮",personalities:["可爱型","温柔型","社交型","纯真型"],description:"你可爱迷人如同小海狮，柔软的绒毛让人忍不住想要拥抱。你温柔善良，是天生的社交高手。纯真的你总能收获真诚的友谊。"},
+  {id:87,name:"白海狮",personalities:["温柔型","可靠型","治愈型","守护型"],description:"你是北极的守护天使，如同白海狮一般温柔而强大。你有着强烈的守护本能，用自己的温暖治愈着身边的每一个人。"},
+  {id:88,name:"臭泥",personalities:["独特型","适应型","务实型","幽默型"],description:"你不在意别人的眼光，如同臭泥一般有着独特的生存哲学。你适应力极强，在任何环境都能找到生存之道。务实是你的本色。"},
+  {id:89,name:"臭臭泥",personalities:["独特型","力量型","可靠型","适应型"],description:"你是独特的强者，如同臭臭泥一般虽然不被理解但实力超群。你不在乎世俗的眼光，坚持做自己。你的内心比任何人都要坚强。"},
+  {id:90,name:"大舌贝",personalities:["自然型","防御型","内敛型","纯真型"],description:"你有着出色的防御本能，如同大舌贝一般坚硬的外壳保护着柔软的内心。你内敛而纯真，是深海中最独特的存在。"},
+  {id:91,name:"刺甲贝",personalities:["防御型","力量型","坚定型","可靠型"],description:"你是坚不可摧的堡垒，如同刺甲贝一般用尖刺守护着自己。你坚定而可靠，是朋友们的坚强后盾。防御是你的天赋。"},
+  {id:92,name:"鬼斯",personalities:["神秘型","机智型","幽默型","自由型"],description:"你是个调皮的幽灵，如同鬼斯一般喜欢捉弄人却又不失可爱。你神秘莫测，智慧超群。自由是你的天性，幽默是你的标签。"},
+  {id:93,name:"鬼斯通",personalities:["神秘型","机智型","力量型","独特型"],description:"你是强大的幽灵法师，如同鬼斯通一般拥有操控人心的能力。你神秘而独特，是灵异世界中最令人敬畏的存在。"},
+  {id:94,name:"耿鬼",personalities:["神秘型","机智型","幽默型","自由型"],description:"你是影子世界的主宰，如同耿鬼一般亦正亦邪难以捉摸。你幽默风趣却又深不可测，是所有人中最独特最有趣的存在。"},
+  {id:95,name:"大岩蛇",personalities:["坚韧型","可靠型","内敛型","防御型"],description:"你如山脉一般沉稳可靠，如同大岩蛇一般坚韧不拔。你不善言辞但内心温暖，是朋友们最坚实的依靠。你的存在就是安全的保障。"},
+  {id:96,name:"催眠貘",personalities:["神秘型","智慧型","内向型","感知型"],description:"你拥有操控梦境的能力，如同催眠貘一般在梦境与现实间穿梭。你神秘而智慧，能够洞察人心最深处的心思。"},
+  {id:97,name:"引梦貘人",personalities:["神秘型","智慧型","温柔型","治愈型"],description:"你是梦境的治疗师，如同引梦貘人一般用梦境治愈他人的心灵。你温柔而神秘，是灵魂的抚慰者。智慧与慈悲并存于你身。"},
+  {id:98,name:"大钳蟹",personalities:["活力型","挑战型","机智型","适应型"],description:"你活力四射如同大钳蟹，用那双强有力的钳子迎接一切挑战。你机智灵活，适应力强，是天生的生存专家。"},
+  {id:99,name:"巨钳蟹",personalities:["力量型","挑战型","可靠型","霸气型"],description:"你是海滩的霸主，如同巨钳蟹一般威风凛凛。你力量强大，气势逼人，是令人敬畏的存在。但你也有着可靠的一面。"},
+  {id:100,name:"雷电球",personalities:["能量型","神秘型","冷静型","力量型"],description:"你蕴含着惊人的电能，如同雷电球一般能量充沛却又不失冷静。你神秘而强大，是电气世界中最令人着迷的存在。"},
+  {id:101,name:"顽皮雷蛋",personalities:["活力型","幽默型","独特型","乐观型"],description:"你就像一颗随时会爆炸的活力炸弹，如同顽皮雷蛋一般充满能量又调皮捣蛋。你用独特的方式给周围带来欢乐。"},
+  {id:102,name:"蛋蛋",personalities:["自然型","神秘型","智慧型","内敛型"],description:"你承载着进化的奥秘，如同蛋蛋一般蕴藏着无限可能。你内敛而神秘，智慧深藏不露。你是生命奇迹的象征。"},
+  {id:103,name:"椰蛋树",personalities:["智慧型","神秘型","守护型","力量型"],description:"你是智慧的象征，如同椰蛋树一般沉稳而渊博。你的头颅中蕴含着超乎想象的知识与力量。你是守护者，也是指引者。"},
+  {id:104,name:"卡拉卡拉",personalities:["内敛型","感性型","守护型","孤独型"],description:"你有着感伤的一面，如同卡拉卡拉一般内心柔软却用盔甲保护自己。你渴望被理解，渴望温暖。你心中的那份执着令人动容。"},
+  {id:105,name:"嘎啦嘎啦",personalities:["守护型","感性型","力量型","忠诚型"],description:"你是忠诚的守护者，如同嘎啦嘎啦一般为了守护族人而战。你感性而坚强，心中燃烧着不灭的火焰。你的忠诚与力量令人敬佩。"},
+  {id:106,name:"飞腿郎",personalities:["力量型","挑战型","热血型","正义型"],description:"你是格斗的大师，如同飞腿郎一般腿法如风招招致命。你热血正义，面对邪恶绝不手软。你的战斗充满激情与力量。"},
+  {id:107,name:"快拳郎",personalities:["力量型","挑战型","热血型","敏捷型"],description:"你是速度与力量的完美结合，如同快拳郎一般出拳如闪电。你热血沸腾，战斗是你生命的意义。敏捷是你的天赋。"},
+  {id:108,name:"大舌头",personalities:["可爱型","幽默型","乐观型","社交型"],description:"你呆萌可爱如同大舌头，总能用独特的形象逗人开心。你乐观开朗，是朋友们的开心果。幽默是你与生俱来的天赋。"},
+  {id:109,name:"瓦斯弹",personalities:["独特型","适应型","神秘型","自由型"],description:"你是个神秘的气体生命体，如同瓦斯弹一般无形却无处不在。你适应力超强，能够在任何地方生存。独特是你的标签。"},
+  {id:110,name:"双弹瓦斯",personalities:["神秘型","独特型","力量型","协作型"],description:"你们是完美协作的双子，如同双弹瓦斯一般配合天衣无缝。你们神秘而强大，是毒气世界中最令人敬畏的存在。"},
+  {id:111,name:"独角犀牛",personalities:["力量型","坚定型","挑战型","防御型"],description:"你如犀牛一般坚不可摧，如同独角犀牛拥有强大的冲击力量。你坚定而顽强，面对困难绝不退缩。力量是你最大的武器。"},
+  {id:112,name:"钻角犀兽",personalities:["力量型","挑战型","坚定型","霸气型"],description:"你是陆地上的战车，如同钻角犀兽一般冲锋陷阵无人能挡。你霸气十足，是力量的象征。你的存在本身就让敌人胆寒。"},
+  {id:113,name:"吉利蛋",personalities:["治愈型","温柔型","守护型","希望型"],description:"你是幸福的化身，如同吉利蛋一般给所有人带来好运与健康。你的存在就是希望，你用爱与温柔守护着每一个需要帮助的人。"},
+  {id:114,name:"蔓藤怪",personalities:["自然型","神秘型","治愈型","守护型"],description:"你是森林的守护者，如同蔓藤怪一般用藤蔓保护着大自然。你神秘而温和，是生态的平衡者。你的治愈能力令人惊叹。"},
+  {id:115,name:"袋兽",personalities:["守护型","母性型","温柔型","力量型"],description:"你是母爱的象征，如同袋兽一般用生命守护着自己的孩子。你温柔而强大，母性的力量让你无所畏惧。你是最伟大的守护者。"},
+  {id:116,name:"墨海马",personalities:["优雅型","神秘型","自由型","独立型"],description:"你如海洋的精灵一般优雅神秘，如同墨海马在水中自由穿梭。你独立自主，享受独处的宁静。你的美是那种神秘而冷艳的美。"},
+  {id:117,name:"海马龙",personalities:["神秘型","力量型","优雅型","高贵型"],description:"你是海洋的贵族，如同海马龙一般高贵而威严。你力量强大又不失优雅，是所有海龙中最令人向往的存在。神秘是你的魅力。"},
+  {id:118,name:"角金鱼",personalities:["自然型","优雅型","温柔型","乐观型"],description:"你在水中优雅地遨游，如同角金鱼一般美丽而乐观。你用那双金色的大眼睛看待世界的美好，给周围带来温馨与希望。"},
+  {id:119,name:"金鱼王",personalities:["优雅型","力量型","自信型","高贵型"],description:"你是水中的王者，如同金鱼王一般高贵威严。你自信从容，优雅永驻。你的存在本身就是一种高贵的象征。"},
+  {id:120,name:"海星星",personalities:["可爱型","神秘型","治愈型","希望型"],description:"你如夜空中的星星一般闪耀，如同海星星一般美丽而神秘。你承载着人们对星空的美好向往，是希望与治愈的象征。"},
+  {id:121,name:"宝石海星",personalities:["神秘型","治愈型","优雅型","希望型"],description:"你是宇宙之美的化身，如同宝石海星一般璀璨夺目。你神秘而优雅，蕴含着治愈与希望的力量。你是夜空最美的存在。"},
+  {id:122,name:"魔墙人偶",personalities:["智慧型","幽默型","艺术型","社交型"],description:"你是才华横溢的艺术家，如同魔墙人偶一般多才多艺。你幽默风趣，是派对的灵魂人物。你的创意与智慧总是让人惊叹。"},
+  {id:123,name:"飞天螳螂",personalities:["敏捷型","挑战型","力量型","冷酷型"],description:"你是速度与力量的完美杀手，如同飞天螳螂一般出刀如风。你冷酷而强大，是所有敌人最可怕的噩梦。挑战是你不变的信条。"},
+  {id:124,name:"迷唇姐",personalities:["神秘型","力量型","独特型","自信型"],description:"你有着独特的冰之魅力，如同迷唇姐一般冷酷又美丽。你自信而强大，是寒冰世界中最令人敬畏的存在。独特是你的标签。"},
+  {id:125,name:"电击兽",personalities:["活力型","热情型","挑战型","热血型"],description:"你浑身散发着电的能量，如同电击兽一般活力四射永远不知疲倦。你热血沸腾，挑战是你不变的人生信条。热情是你永恒的标签。"},
+  {id:126,name:"鸭嘴火兽",personalities:["热情型","力量型","挑战型","活力型"],description:"你如火焰一般热情燃烧，如同鸭嘴火兽一般将热情传递给每一个人。你活力充沛，是所有聚会的气氛制造者。热情是你的天性。"},
+  {id:127,name:"凯罗斯",personalities:["力量型","挑战型","霸道型","霸气型"],description:"你是虫系之王，如同凯罗斯一般霸道强势。你力量惊人，挑战是你证明自己的方式。霸气是你的标签，你的存在本身就是一种威慑。"},
+  {id:128,name:"肯泰罗",personalities:["力量型","活力型","挑战型","热血型"],description:"你拥有无穷的力量与野性，如同肯泰罗一般冲锋起来无人能挡。你热血沸腾，活力无限。是力量与激情完美结合的象征。"},
+  {id:129,name:"鲤鱼王",personalities:["潜力型","乐观型","坚持型","希望型"],description:"你虽然现在还不起眼，但未来有着无限的可能，如同鲤鱼王终有一日会跃过龙门。你乐观向上，永不放弃希望。坚持是你的座右铭。"},
+  {id:130,name:"暴鲤龙",personalities:["力量型","自由型","挑战型","霸气型"],description:"你是真正的大海霸主，如同暴鲤龙一般拥有征服一切的力量。你向往自由，不甘被束缚。你的霸气与力量让所有人敬畏。"},
+  {id:131,name:"拉普拉斯",personalities:["温柔型","治愈型","守护型","智慧型"],description:"你是海洋的温柔巨人，如同拉普拉斯一般承载生命穿越海洋。你智慧而慈悲，是所有生灵最温暖的依靠。你的歌声能治愈心灵。"},
+  {id:132,name:"百变怪",personalities:["独特型","适应型","神秘型","自由型"],description:"你是变化的化身，如同百变怪一般能够变成任何形态。你不受任何束缚，自由自在。你是无限可能的象征。"},
+  {id:133,name:"伊布",personalities:["温柔型","可爱型","适应型","多元型"],description:"你拥有无限进化的可能，如同伊布一般多才多艺适应力强。你温柔可爱，是人见人爱的小精灵。你代表着多元与可能。"},
+  {id:134,name:"水伊布",personalities:["温柔型","治愈型","冷静型","优雅型"],description:"你如清澈的溪水一般温柔动人，如同水伊布一般有着治愈的魔力。你冷静优雅，用自己的方式传递着平静与安宁。"},
+  {id:135,name:"雷伊布",personalities:["活力型","敏捷型","热情型","自由型"],description:"你如闪电一般迅捷有力，如同雷伊布一般活力四射充满能量。你热情自由，闪电是你的象征。你的速度无人能及。"},
+  {id:136,name:"火伊布",personalities:["热情型","活力型","温暖型","自由型"],description:"你如火焰一般温暖热情，如同火伊布一般点燃周围每个人的心。你活力充沛，自由奔放。你的热情能够融化一切坚冰。"},
+  {id:137,name:"多边兽",personalities:["科技型","智慧型","独特型","理性型"],description:"你是科技的结晶，如同多边兽一般代表着未来的可能。你理性而智慧，是数字世界最美的存在。独特是你的魅力。"},
+  {id:138,name:"菊石兽",personalities:["自然型","古老型","神秘型","智慧型"],description:"你来自远古的深海，如同菊石兽一般承载着亿年的智慧。你神秘而渊博，是时间胶囊中最珍贵的存在。古老是你的底蕴。"},
+  {id:139,name:"化石盔",personalities:["防御型","古老型","坚韧型","可靠型"],description:"你是远古的守护者，如同化石盔一般坚不可摧。你古老而可靠，是历史的见证者。你的存在提醒我们珍惜当下。"},
+  {id:140,name:"化石翼龙",personalities:["自由型","力量型","霸气型","王者型"],description:"你是远古天空的王者，如同化石翼龙一般君临天下。你自由而霸气，力量与威严并存。你的存在就是王者的证明。"},
+  {id:141,name:"卡比兽",personalities:["治愈型","温和型","可爱型","满足型"],description:"你是幸福的化身，如同卡比兽一般永远满足而快乐。你温和治愈，是所有人最温暖的港湾。你的睡眠都充满幸福的味道。"},
+  {id:142,name:"化石翼龙",personalities:["力量型","霸气型","挑战型","王者型"],description:"你是恐龙时代的空中霸主，如同化石翼龙一般威严而强大。你力量惊人，霸气十足。是所有挑战者都必须仰望的存在。"},
+  {id:143,name:"幸福蛋",personalities:["治愈型","温柔型","守护型","希望型"],description:"你是幸福的化身，如同幸福蛋一般给所有人带来快乐与健康。你温柔守护，是所有生灵最温暖的存在。你用爱治愈世界。"},
+  {id:144,name:"急冻鸟",personalities:["神秘型","冷静型","优雅型","守护型"],description:"你是凛冽北风的化身，如同急冻鸟一般冷静而美丽。你守护着冰之世界，优雅而神秘。你的存在是冰雪世界的奇迹。"},
+  {id:145,name:"闪电鸟",personalities:["活力型","自由型","力量型","挑战型"],description:"你是雷鸣的化身，如同闪电鸟一般在暴风雨中自由翱翔。你活力充沛，追求自由。你代表着力量与挑战。"},
+  {id:146,name:"火焰鸟",personalities:["热情型","力量型","自由型","霸气型"],description:"你是烈焰的化身，如同火焰鸟一般在火山中自由飞舞。你热情似火，力量惊人。你代表着永恒的燃烧与自由。"},
+  {id:147,name:"迷你龙",personalities:["神秘型","优雅型","希望型","成长型"],description:"你如水晶一般纯净神秘，如同迷你龙一般承载着进化的希望。你优雅而充满潜力，是龙系世界最纯真的存在。"},
+  {id:148,name:"哈克龙",personalities:["神秘型","力量型","优雅型","智慧型"],description:"你已初具龙的风范，如同哈克龙一般神秘而优雅。你力量渐长，智慧深藏。你是成长路上最美的风景。"},
+  {id:149,name:"快龙",personalities:["力量型","守护型","可靠型","王者型"],description:"你是真正的龙之王者，如同快龙一般力量与可靠并存。你是所有人的梦想伙伴，强大而忠诚。你守护着海洋与天空的和平。"},
+  {id:150,name:"超梦",personalities:["智慧型","神秘型","力量型","超然型"],description:"你是智慧与力量的终极化身，如同超梦一般超越了一切凡俗。你神秘而强大，智慧深不可测。你代表着生命进化的无限可能。"},
+  {id:151,name:"梦幻",personalities:["神秘型","纯真型","自由型","无限型"],description:"你是无限可能的象征，如同梦幻一般不受任何束缚。你纯真而神秘，能够变化成任何宝可梦。你是所有梦想中最美好的那一个。"}
+];
+
+// 30道测试题
+const QUESTIONS = [
+  {
+    question: "周末你通常选择怎么度过？",
+    options: [
+      { text: "去户外探险、徒步或露营，亲近大自然", personalities: ["冒险型", "活力型", "自然型"] },
+      { text: "在家安静地看书、听音乐或玩游戏", personalities: ["内向型", "理性型", "治愈型"] },
+      { text: "和朋友聚会、开派对或参加社交活动", personalities: ["社交型", "情感型", "热情型"] },
+      { text: "学习新技能或处理工作相关的事情", personalities: ["理性型", "进取型", "挑战型"] }
+    ]
+  },
+  {
+    question: "如果你遇到了危险，你会怎么做？",
+    options: [
+      { text: "直接冲上去面对，保护身边的人", personalities: ["勇敢型", "守护型", "挑战型"] },
+      { text: "冷静分析局势，制定最合理的对策", personalities: ["理性型", "谨慎型", "智慧型"] },
+      { text: "寻求帮助，和大家一起应对", personalities: ["合作型", "社交型", "情感型"] },
+      { text: "随机应变，利用环境优势化解危机", personalities: ["机智型", "适应型", "自由型"] }
+    ]
+  },
+  {
+    question: "你理想的生活方式是什么？",
+    options: [
+      { text: "每天充满新鲜刺激，勇于尝试新事物", personalities: ["活力型", "冒险型", "挑战型"] },
+      { text: "平静安稳，享受简单平淡的生活", personalities: ["温和型", "治愈型", "内敛型"] },
+      { text: "和家人朋友在一起，感受爱与温暖", personalities: ["情感型", "温柔型", "社交型"] },
+      { text: "不断突破自我，追求更高的成就", personalities: ["进取型", "力量型", "挑战型"] }
+    ]
+  },
+  {
+    question: "以下哪种品质你最看重？",
+    options: [
+      { text: "力量与勇气，敢于直面一切", personalities: ["勇敢型", "力量型", "挑战型"] },
+      { text: "智慧与知识，追求真理与深度", personalities: ["智慧型", "理性型", "神秘型"] },
+      { text: "善良与忠诚，温暖对待每一个人", personalities: ["温柔型", "治愈型", "忠诚型"] },
+      { text: "自由与独立，不受任何束缚", personalities: ["自由型", "独立型", "独特型"] }
+    ]
+  },
+  {
+    question: "你最喜欢什么样的环境？",
+    options: [
+      { text: "大自然、森林、海洋、山川", personalities: ["自然型", "冒险型", "自由型"] },
+      { text: "城市、科技、现代化的便利", personalities: ["理性型", "科技型", "现代型"] },
+      { text: "高山、星空、辽阔的大地", personalities: ["自由型", "神秘型", "挑战型"] },
+      { text: "温馨的家，与挚爱的人在一起", personalities: ["情感型", "温柔型", "治愈型"] }
+    ]
+  },
+  {
+    question: "你的朋友会怎么形容你？",
+    options: [
+      { text: "搞笑、幽默，总是带来欢乐", personalities: ["乐观型", "活力型", "幽默型"] },
+      { text: "可靠、稳重，值得信赖", personalities: ["可靠型", "理性型", "守护型"] },
+      { text: "神秘、独特，难以捉摸", personalities: ["神秘型", "独特型", "内向型"] },
+      { text: "温柔、体贴，善解人意", personalities: ["温柔型", "治愈型", "情感型"] }
+    ]
+  },
+  {
+    question: "你梦想中的冒险是什么样的？",
+    options: [
+      { text: "征服强大的对手，成为传奇", personalities: ["挑战型", "力量型", "王者型"] },
+      { text: "探索未知的世界，发现宝藏", personalities: ["探索型", "冒险型", "好奇型"] },
+      { text: "保护重要的人，成为守护者", personalities: ["守护型", "忠诚型", "母性型"] },
+      { text: "收集珍稀之物，完成图鉴", personalities: ["收藏型", "理性型", "独特型"] }
+    ]
+  },
+  {
+    question: "面对失败时，你会怎么做？",
+    options: [
+      { text: "爬起来继续战斗，永不放弃", personalities: ["勇敢型", "挑战型", "热血型"] },
+      { text: "冷静分析原因，总结经验教训", personalities: ["理性型", "智慧型", "谨慎型"] },
+      { text: "向朋友倾诉，寻求安慰和支持", personalities: ["情感型", "社交型", "治愈型"] },
+      { text: "暂时放下，去做喜欢的事调整心情", personalities: ["乐观型", "适应型", "自由型"] }
+    ]
+  },
+  {
+    question: "你更倾向于什么样的穿着风格？",
+    options: [
+      { text: "运动休闲，方便活动和探险", personalities: ["活力型", "自由型", "实用型"] },
+      { text: "简约舒适，注重品质和细节", personalities: ["优雅型", "内敛型", "理性型"] },
+      { text: "时尚潮流，展现个性和品味", personalities: ["独特型", "自信型", "魅力型"] },
+      { text: "可爱甜美，给人温暖的感觉", personalities: ["可爱型", "温柔型", "治愈型"] }
+    ]
+  },
+  {
+    question: "如果可以选择超能力，你会想要什么？",
+    options: [
+      { text: "无穷的力量，无所不能", personalities: ["力量型", "挑战型", "霸气型"] },
+      { text: "读心术，了解他人的想法", personalities: ["神秘型", "智慧型", "感知型"] },
+      { text: "治愈能力，帮助所有人", personalities: ["治愈型", "温柔型", "守护型"] },
+      { text: "瞬间移动，去任何想去的地方", personalities: ["自由型", "活力型", "独特型"] }
+    ]
+  },
+  {
+    question: "你对金钱的态度是什么？",
+    options: [
+      { text: "够用就好，追求精神富足", personalities: ["温和型", "治愈型", "内敛型"] },
+      { text: "努力赚钱，为了更好的生活", personalities: ["进取型", "理性型", "务实型"] },
+      { text: "钱是身外之物，开心最重要", personalities: ["乐观型", "自由型", "热情型"] },
+      { text: "合理规划，理财有道", personalities: ["理性型", "智慧型", "谨慎型"] }
+    ]
+  },
+  {
+    question: "什么样的音乐最吸引你？",
+    options: [
+      { text: "充满力量的摇滚或电子音乐", personalities: ["活力型", "热情型", "挑战型"] },
+      { text: "悠扬舒缓的古典或民谣音乐", personalities: ["优雅型", "治愈型", "内敛型"] },
+      { text: "欢快轻松的流行或舞曲", personalities: ["乐观型", "活力型", "社交型"] },
+      { text: "神秘空灵的冥想或新世纪音乐", personalities: ["神秘型", "智慧型", "自由型"] }
+    ]
+  },
+  {
+    question: "你更喜欢什么样的天气？",
+    options: [
+      { text: "阳光明媚的晴天，充满活力", personalities: ["活力型", "乐观型", "热情型"] },
+      { text: "细雨绵绵的雨天，宁静浪漫", personalities: ["温柔型", "治愈型", "内敛型"] },
+      { text: "电闪雷鸣的暴风雨，刺激震撼", personalities: ["冒险型", "挑战型", "力量型"] },
+      { text: "星空璀璨的夜晚，神秘深邃", personalities: ["神秘型", "自由型", "智慧型"] }
+    ]
+  },
+  {
+    question: "你更擅长什么类型的活动？",
+    options: [
+      { text: "体育运动，挑战身体极限", personalities: ["活力型", "力量型", "挑战型"] },
+      { text: "艺术创作，表达内心世界", personalities: ["独特型", "感性型", "艺术型"] },
+      { text: "学术研究，探索未知领域", personalities: ["智慧型", "理性型", "好奇型"] },
+      { text: "社交活动，结识新朋友", personalities: ["社交型", "热情型", "魅力型"] }
+    ]
+  },
+  {
+    question: "如果有一扇通往任意地方的门，你会去哪里？",
+    options: [
+      { text: "远古时代或未来世界", personalities: ["神秘型", "探索型", "好奇型"] },
+      { text: "传说中的神秘之地", personalities: ["冒险型", "挑战型", "独特型"] },
+      { text: "温馨的家，与家人团聚", personalities: ["情感型", "温柔型", "治愈型"] },
+      { text: "安静的海边，享受独处时光", personalities: ["内敛型", "自由型", "治愈型"] }
+    ]
+  },
+  {
+    question: "你在团队中通常扮演什么角色？",
+    options: [
+      { text: "领导者，指引大家前进的方向", personalities: ["王者型", "力量型", "挑战型"] },
+      { text: "协调者，维护团队的和谐", personalities: ["情感型", "温柔型", "合作型"] },
+      { text: "执行者，完成分配的任务", personalities: ["可靠型", "务实型", "理性型"] },
+      { text: "创意者，提供新奇的点子", personalities: ["独特型", "智慧型", "自由型"] }
+    ]
+  },
+  {
+    question: "你最害怕失去什么？",
+    options: [
+      { text: "自由，被束缚和控制", personalities: ["自由型", "独立型", "挑战型"] },
+      { text: "家人和朋友的爱", personalities: ["情感型", "温柔型", "守护型"] },
+      { text: "自己的力量和能力", personalities: ["力量型", "挑战型", "自尊型"] },
+      { text: "记忆和珍贵的经历", personalities: ["智慧型", "感性型", "内敛型"] }
+    ]
+  },
+  {
+    question: "你更倾向于相信什么？",
+    options: [
+      { text: "科学和逻辑，一切皆可解释", personalities: ["理性型", "智慧型", "谨慎型"] },
+      { text: "直觉和感受，跟随内心", personalities: ["感性型", "自由型", "神秘型"] },
+      { text: "努力和坚持，命运掌握在自己手中", personalities: ["进取型", "挑战型", "热血型"] },
+      { text: "爱与希望，温暖人心", personalities: ["治愈型", "温柔型", "乐观型"] }
+    ]
+  },
+  {
+    question: "你更喜欢和什么样的动物相处？",
+    options: [
+      { text: "忠诚的狗狗，永远陪伴左右", personalities: ["忠诚型", "温暖型", "社交型"] },
+      { text: "神秘的猫，独处时优雅", personalities: ["独立型", "神秘型", "独特型"] },
+      { text: "勇猛的狮子，展现王者风范", personalities: ["力量型", "王者型", "霸气型"] },
+      { text: "可爱的小动物，治愈心灵", personalities: ["治愈型", "温柔型", "可爱型"] }
+    ]
+  },
+  {
+    question: "如果可以隐形一天，你会做什么？",
+    options: [
+      { text: "去看看名人明星的私生活", personalities: ["好奇型", "独特型", "冒险型"] },
+      { text: "帮助那些需要帮助的人", personalities: ["守护型", "治愈型", "善良型"] },
+      { text: "去任何想去的地方，不被发现", personalities: ["自由型", "独特型", "探索型"] },
+      { text: "安安静静地享受一个人的世界", personalities: ["内敛型", "治愈型", "独处型"] }
+    ]
+  },
+  {
+    question: "你最喜欢的食物类型是什么？",
+    options: [
+      { text: "香辣刺激的重口味美食", personalities: ["活力型", "热情型", "挑战型"] },
+      { text: "清淡健康的天然食物", personalities: ["自然型", "治愈型", "温和型"] },
+      { text: "精致可爱的甜点和零食", personalities: ["可爱型", "乐观型", "温柔型"] },
+      { text: "营养均衡的精致料理", personalities: ["理性型", "智慧型", "优雅型"] }
+    ]
+  },
+  {
+    question: "你更看重外表还是内在？",
+    options: [
+      { text: "内在，人品和性格最重要", personalities: ["理性型", "智慧型", "温柔型"] },
+      { text: "两者都要，平衡才是美", personalities: ["优雅型", "和谐型", "理性型"] },
+      { text: "第一印象很重要，外表不可忽视", personalities: ["独特型", "自信型", "魅力型"] },
+      { text: "喜欢就好，没有特定标准", personalities: ["自由型", "乐观型", "独特型"] }
+    ]
+  },
+  {
+    question: "如果你中了彩票，你会怎么做？",
+    options: [
+      { text: "环游世界，体验不同文化", personalities: ["冒险型", "自由型", "活力型"] },
+      { text: "存起来，理性规划未来", personalities: ["理性型", "智慧型", "务实型"] },
+      { text: "买房买车，提升生活品质", personalities: ["务实型", "理性型", "现代型"] },
+      { text: "分享给家人朋友，做慈善", personalities: ["情感型", "善良型", "守护型"] }
+    ]
+  },
+  {
+    question: "你更倾向于一个人还是和他人一起完成任务？",
+    options: [
+      { text: "独自完成，享受个人时光", personalities: ["内敛型", "独立型", "专注型"] },
+      { text: "团队合作，各展所长", personalities: ["合作型", "社交型", "协作型"] },
+      { text: "都可以，视情况而定", personalities: ["适应型", "理性型", "灵活型"] },
+      { text: "需要时合作，平时独立", personalities: ["平衡型", "智慧型", "理性型"] }
+    ]
+  },
+  {
+    question: "什么样的电影最吸引你？",
+    options: [
+      { text: "热血激战的动作大片", personalities: ["活力型", "力量型", "挑战型"] },
+      { text: "温馨感人的爱情故事", personalities: ["情感型", "温柔型", "感性型"] },
+      { text: "烧脑悬疑的推理片", personalities: ["智慧型", "理性型", "好奇型"] },
+      { text: "奇幻冒险的科幻片", personalities: ["神秘型", "冒险型", "自由型"] }
+    ]
+  },
+  {
+    question: "你认为自己最大的优点是什么？",
+    options: [
+      { text: "坚持不懈，永不放弃", personalities: ["挑战型", "热血型", "坚定型"] },
+      { text: "善于倾听，理解他人", personalities: ["温柔型", "治愈型", "情感型"] },
+      { text: "头脑聪明，学习能力强", personalities: ["智慧型", "理性型", "好奇型"] },
+      { text: "善于交际，人缘好", personalities: ["社交型", "热情型", "魅力型"] }
+    ]
+  },
+  {
+    question: "你更喜欢什么类型的书籍？",
+    options: [
+      { text: "奇幻冒险类，沉醉在想象世界", personalities: ["冒险型", "神秘型", "自由型"] },
+      { text: "心灵成长类，提升自我", personalities: ["智慧型", "理性型", "进取型"] },
+      { text: "悬疑推理类，挑战思维", personalities: ["智慧型", "好奇型", "理性型"] },
+      { text: "温馨治愈类，温暖心灵", personalities: ["治愈型", "温柔型", "感性型"] }
+    ]
+  },
+  {
+    question: "如果可以改变自己的一件事，你会选择什么？",
+    options: [
+      { text: "变得更勇敢，无惧任何挑战", personalities: ["勇敢型", "挑战型", "进取型"] },
+      { text: "变得更聪明，知识渊博", personalities: ["智慧型", "理性型", "好奇型"] },
+      { text: "变得更温柔，善待他人", personalities: ["温柔型", "治愈型", "感性型"] },
+      { text: "保持现状，接受真实的自己", personalities: ["自信型", "自由型", "独特型"] }
+    ]
+  },
+  {
+    question: "你希望给这个世界留下什么？",
+    options: [
+      { text: "创造伟大的事业，被人铭记", personalities: ["王者型", "力量型", "挑战型"] },
+      { text: "帮助很多人，传递温暖与爱", personalities: ["治愈型", "守护型", "善良型"] },
+      { text: "留下宝贵的知识和智慧", personalities: ["智慧型", "理性型", "传承型"] },
+      { text: "开心过每一天，享受当下", personalities: ["乐观型", "自由型", "治愈型"] }
+    ]
+  }
+];
+
+// 状态
+let state = {
+  currentQuestion: 0,
+  answers: [],
+  personalityScores: {},
+  result: null
+};
+
+// 初始化粒子
+function initParticles() {
+  const container = document.getElementById('particles');
+  const particleCount = 30;
+
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.width = (Math.random() * 4 + 2) + 'px';
+    particle.style.height = particle.style.width;
+    particle.style.animationDelay = (Math.random() * 15) + 's';
+    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+    container.appendChild(particle);
+  }
+}
+
+// 开始测试
+function startTest() {
+  document.getElementById('welcomeScreen').classList.add('hidden');
+  document.getElementById('questionScreen').classList.add('active');
+  renderQuestion();
+}
+
+// 渲染问题
+function renderQuestion() {
+  const question = QUESTIONS[state.currentQuestion];
+  const progress = ((state.currentQuestion + 1) / QUESTIONS.length) * 100;
+
+  document.getElementById('questionNumber').textContent = `问题 ${state.currentQuestion + 1}/${QUESTIONS.length}`;
+  document.getElementById('questionText').textContent = question.question;
+  document.getElementById('progressText').textContent = `第 ${state.currentQuestion + 1} 题`;
+  document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+  document.getElementById('progressFill').style.width = progress + '%';
+
+  const optionsContainer = document.getElementById('optionsContainer');
+  const letters = ['A', 'B', 'C', 'D'];
+
+  optionsContainer.innerHTML = question.options.map((option, index) => `
+    <button class="option" onclick="selectAnswer(${index})" data-index="${index}">
+      <span class="option-letter">${letters[index]}</span>
+      <span class="option-text">${option.text}</span>
+    </button>
+  `).join('');
+
+  document.getElementById('questionScreen').classList.remove('active');
+  void document.getElementById('questionScreen').offsetWidth;
+  document.getElementById('questionScreen').classList.add('active');
+}
+
+// 选择答案
+function selectAnswer(optionIndex) {
+  const question = QUESTIONS[state.currentQuestion];
+  const selectedOption = question.options[optionIndex];
+
+  document.querySelectorAll('.option').forEach((opt, idx) => {
+    opt.classList.toggle('selected', idx === optionIndex);
+  });
+
+  state.answers.push({
+    questionIndex: state.currentQuestion,
+    selectedPersonalities: selectedOption.personalities
+  });
+
+  selectedOption.personalities.forEach(personality => {
+    state.personalityScores[personality] = (state.personalityScores[personality] || 0) + 1;
+  });
+
+  setTimeout(() => {
+    if (state.currentQuestion < QUESTIONS.length - 1) {
+      state.currentQuestion++;
+      renderQuestion();
+    } else {
+      showLoading();
+    }
+  }, 400);
+}
+
+// 显示加载
+function showLoading() {
+  document.getElementById('questionScreen').classList.remove('active');
+  document.getElementById('questionScreen').classList.add('hidden');
+  document.getElementById('loadingScreen').classList.add('active');
+
+  setTimeout(() => {
+    calculateResult();
+  }, 2500);
+}
+
+// 计算结果
+function calculateResult() {
+  let maxScore = 0;
+  let topPersonalities = [];
+
+  for (const [personality, score] of Object.entries(state.personalityScores)) {
+    if (score > maxScore) {
+      maxScore = score;
+      topPersonalities = [personality];
+    } else if (score === maxScore) {
+      topPersonalities.push(personality);
+    }
+  }
+
+  const dominantPersonality = topPersonalities[Math.floor(Math.random() * topPersonalities.length)];
+
+  // 优先匹配前3个最高分的性格
+  const sortedPersonalities = Object.entries(state.personalityScores)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 3)
+    .map(([p]) => p);
+
+  const matchedPokemon = POKEMON_DATABASE.filter(pokemon =>
+    pokemon.personalities.some(p => sortedPersonalities.includes(p))
+  );
+
+  const candidatePokemon = matchedPokemon.length > 0 ? matchedPokemon : POKEMON_DATABASE;
+  state.result = candidatePokemon[Math.floor(Math.random() * candidatePokemon.length)];
+
+  // 计算匹配度 (70% - 99%)
+  const baseMatch = 70;
+  const maxPossibleScore = QUESTIONS.length * 3;
+  const actualScore = Object.values(state.personalityScores).reduce((a, b) => a + b, 0);
+  const matchBonus = Math.floor((actualScore / maxPossibleScore) * 29);
+  state.result.matchRate = Math.min(baseMatch + matchBonus, 99);
+
+  showResult();
+}
+
+// 显示结果
+function showResult() {
+  document.getElementById('loadingScreen').classList.remove('active');
+  document.getElementById('resultScreen').classList.add('active');
+
+  const pokemon = state.result;
+
+  document.getElementById('pokemonName').textContent = pokemon.name;
+  document.getElementById('pokemonNumber').textContent = `No. ${String(pokemon.id).padStart(4, '0')}`;
+  document.getElementById('resultDescription').textContent = pokemon.description;
+  document.getElementById('compatibilityText').textContent = pokemon.matchRate + '%';
+
+  const tagsHtml = pokemon.personalities.slice(0, 4).map(p =>
+    `<span class="personality-tag">${p}</span>`
+  ).join('');
+  document.getElementById('personalityTags').innerHTML = tagsHtml;
+
+  const img = document.getElementById('pokemonImage');
+  img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
+  img.alt = pokemon.name;
+
+  img.onerror = function() {
+    this.src = `https://pokeres.bastionbot.org/images/pokemon/${pokemon.id}.png`;
+    this.onerror = function() {
+      this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23ddd"/><text x="50" y="55" text-anchor="middle" font-size="12" fill="%23999">?</text></svg>';
+    };
+  };
+
+  setTimeout(() => {
+    document.getElementById('compatibilityFill').style.width = pokemon.matchRate + '%';
+  }, 100);
+}
+
+// 分享结果
+function shareResult() {
+  const pokemon = state.result;
+  const text = `🔮 我的宝可梦伙伴测试结果出来了！\n\n我最适合的宝可梦是「${pokemon.name}」！\n灵魂契合度: ${pokemon.matchRate}%\n\n性格标签: ${pokemon.personalities.join('、')}\n\n${pokemon.description}\n\n你也来测试一下 →`;
+
+  if (navigator.share) {
+    navigator.share({
+      title: '宝可梦伙伴测试',
+      text: text
+    });
+  } else {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('结果已复制到剪贴板！');
+    });
+  }
+}
+
+// 重置测试
+function resetTest() {
+  state = {
+    currentQuestion: 0,
+    answers: [],
+    personalityScores: {},
+    result: null
+  };
+
+  document.getElementById('resultScreen').classList.remove('active');
+  document.getElementById('loadingScreen').classList.remove('active');
+  document.getElementById('questionScreen').classList.remove('active');
+  document.getElementById('questionScreen').classList.add('hidden');
+  document.getElementById('welcomeScreen').classList.remove('hidden');
+  document.getElementById('compatibilityFill').style.width = '0';
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', initParticles);
+</script>
+</body>
+</html>
