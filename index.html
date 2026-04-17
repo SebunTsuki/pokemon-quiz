@@ -1279,13 +1279,27 @@ function showResult() {
   document.getElementById('personalityTags').innerHTML = tagsHtml;
 
   const img = document.getElementById('pokemonImage');
+  // 使用国内更快的图片源
   img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
   img.alt = pokemon.name;
-
+  
+  // 添加 loading 状态
+  img.style.opacity = '0';
+  img.onload = function() {
+    this.style.opacity = '1';
+    this.style.transition = 'opacity 0.3s ease';
+  };
+  
   img.onerror = function() {
-    this.src = `https://pokeres.bastionbot.org/images/pokemon/${pokemon.id}.png`;
+    // 备用源1：pkimg
+    this.src = `https://img.pokemondb.net/artwork/large/${pokemon.name.toLowerCase().replace(/\s/g, '-')}.jpg`;
     this.onerror = function() {
-      this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23ddd"/><text x="50" y="55" text-anchor="middle" font-size="12" fill="%23999">?</text></svg>';
+      // 备用源2：国内镜像
+      this.src = `https://pokeres.bastionbot.org/images/pokemon/${pokemon.id}.png`;
+      this.onerror = function() {
+        // 最终备用：显示问号
+        this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23ddd"/><text x="50" y="55" text-anchor="middle" font-size="12" fill="%23999">?</text></svg>';
+      };
     };
   };
 
@@ -1313,12 +1327,10 @@ function shareResult() {
 
 // 重置测试
 function resetTest() {
-  state = {
-    currentQuestion: 0,
-    answers: [],
-    personalityScores: {},
-    result: null
-  };
+  state.currentQuestion = 0;
+  state.answers = [];
+  state.personalityScores = {};
+  state.result = null;
 
   document.getElementById('resultScreen').classList.remove('active');
   document.getElementById('loadingScreen').classList.remove('active');
@@ -1326,6 +1338,11 @@ function resetTest() {
   document.getElementById('questionScreen').classList.add('hidden');
   document.getElementById('welcomeScreen').classList.remove('hidden');
   document.getElementById('compatibilityFill').style.width = '0';
+  
+  // 清除已选择的选项样式
+  document.querySelectorAll('.option').forEach(opt => {
+    opt.classList.remove('selected');
+  });
 }
 
 // 页面加载完成后初始化
