@@ -1279,8 +1279,8 @@ function showResult() {
   document.getElementById('personalityTags').innerHTML = tagsHtml;
 
   const img = document.getElementById('pokemonImage');
-  // 使用稳定的图片源（微信兼容）
-  img.src = `https://img.pokemondb.net/sprites/home/shiny/${pokemon.id}.png`;
+  // 使用 jsDelivr CDN（国内加速，微信兼容）
+  img.src = `https://cdn.jsdelivr.net/gh/PokeAPI/sprites@master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
   img.alt = pokemon.name;
   
   // 添加 loading 状态
@@ -1291,11 +1291,11 @@ function showResult() {
   };
   
   img.onerror = function() {
-    // 备用源1：pokeapi
-    this.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
+    // 备用源1：pokeres
+    this.src = `https://pokeres.bastionbot.org/images/pokemon/${pokemon.id}.png`;
     this.onerror = function() {
-      // 备用源2：pokeres
-      this.src = `https://pokeres.bastionbot.org/images/pokemon/${pokemon.id}.png`;
+      // 备用源2：Pokemon Wiki
+      this.src = `https://archives.bulbapedia.curbpedia.net/images/pokemon/${pokemon.id}.png`;
       this.onerror = function() {
         // 最终备用：显示问号
         this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23ddd"/><text x="50" y="55" text-anchor="middle" font-size="12" fill="%23999">?</text></svg>';
