@@ -1270,7 +1270,7 @@ function showResult() {
 
   document.getElementById('pokemonName').textContent = pokemon.name;
   document.getElementById('pokemonNumber').textContent = `No. ${String(pokemon.id).padStart(4, '0')}`;
-  document.getElementById('resultDescription').textContent = pokemon.description;
+  document.getElementById('resultDescription').textContent = pokemon.description + '\n\n— By 悠然时光';
   document.getElementById('compatibilityText').textContent = pokemon.matchRate + '%';
 
   const tagsHtml = pokemon.personalities.slice(0, 4).map(p =>
