@@ -1279,26 +1279,27 @@ function showResult() {
   document.getElementById('personalityTags').innerHTML = tagsHtml;
 
   const img = document.getElementById('pokemonImage');
-  // 使用国内更快的图片源
-  img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
+  // 使用稳定的图片源（微信兼容）
+  img.src = `https://img.pokemondb.net/sprites/home/shiny/${pokemon.id}.png`;
   img.alt = pokemon.name;
   
   // 添加 loading 状态
   img.style.opacity = '0';
+  img.style.transition = 'opacity 0.5s ease';
   img.onload = function() {
     this.style.opacity = '1';
-    this.style.transition = 'opacity 0.3s ease';
   };
   
   img.onerror = function() {
-    // 备用源1：pkimg
-    this.src = `https://img.pokemondb.net/artwork/large/${pokemon.name.toLowerCase().replace(/\s/g, '-')}.jpg`;
+    // 备用源1：pokeapi
+    this.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
     this.onerror = function() {
-      // 备用源2：国内镜像
+      // 备用源2：pokeres
       this.src = `https://pokeres.bastionbot.org/images/pokemon/${pokemon.id}.png`;
       this.onerror = function() {
         // 最终备用：显示问号
         this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="%23ddd"/><text x="50" y="55" text-anchor="middle" font-size="12" fill="%23999">?</text></svg>';
+        this.style.opacity = '1';
       };
     };
   };
@@ -1311,16 +1312,25 @@ function showResult() {
 // 分享结果
 function shareResult() {
   const pokemon = state.result;
-  const text = `🔮 我的宝可梦伙伴测试结果出来了！\n\n我最适合的宝可梦是「${pokemon.name}」！\n灵魂契合度: ${pokemon.matchRate}%\n\n性格标签: ${pokemon.personalities.join('、')}\n\n${pokemon.description}\n\n你也来测试一下 →`;
+  const shareUrl = 'https://sebuntsuki.github.io/pokemon-quiz/';
+  const text = `🔮 我的宝可梦伙伴测试结果出来了！
+
+我最适合的宝可梦是「${pokemon.name}」！
+灵魂契合度: ${pokemon.matchRate}%
+
+性格标签: ${pokemon.personalities.join('、')}
+
+你也来测试一下 → ${shareUrl}`;
 
   if (navigator.share) {
     navigator.share({
       title: '宝可梦伙伴测试',
-      text: text
+      text: text,
+      url: shareUrl
     });
   } else {
     navigator.clipboard.writeText(text).then(() => {
-      alert('结果已复制到剪贴板！');
+      alert('结果已复制到剪贴板！快去分享给朋友吧！🎉');
     });
   }
 }
